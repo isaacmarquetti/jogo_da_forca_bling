@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo da Forca - Glossário Bling</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        .letter-box {
+            width: 40px;
+            height: 40px;
+            border-bottom: 3px solid #16a34a; /* green-600 */
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            margin: 0 4px;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        .space-box {
+            width: 20px;
+            height: 40px;
+        }
+        @media (min-width: 640px) {
+            .letter-box {
+                width: 50px;
+                height: 50px;
+                font-size: 2rem;
+            }
+            .space-box {
+                height: 50px;
+            }
+        }
+        .keyboard-btn {
+            transition: all 0.2s ease-in-out;
+        }
+        .keyboard-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        .hangman-part {
+            stroke: #1f2937;
+            stroke-width: 4;
+            fill: none;
+            stroke-linecap: round;
+            transition: opacity 0.3s ease-in-out;
+            opacity: 0;
+        }
+        .modal-content, .start-screen-content, .final-victory-content {
+            animation: popIn 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+        }
+        .modal-winner {
+            background: linear-gradient(135deg, #22c55e, #10b981);
+            color: white;
+            border: 4px solid #facc15;
+            box-shadow: 0 0 20px rgba(250, 204, 21, 0.6);
+        }
+        .modal-winner #modal-title {
+            color: white;
+        }
+        .modal-winner #correct-word {
+            color: #ffffff;
+        }
+        .modal-winner .text-gray-600 {
+             color: #d1fae5;
+        }
+        .modal-winner #word-definition {
+            color: #ffffff;
+            font-size: 1.125rem;
+            line-height: 1.75rem;
+            font-weight: 600;
+        }
+        .modal-winner #play-again-btn {
+            background-color: white;
+            color: #15803d;
+            font-weight: 700;
+        }
+        .modal-winner #play-again-btn:hover {
+            background-color: #f0fdf4;
+        }
+
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.8); }
+            80% { opacity: 1; transform: scale(1.05); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-emerald-900 via-green-900 to-gray-900 flex flex-col items-center justify-center min-h-screen p-4 overflow-hidden">
+
+    <!-- Tela de Início -->
+    <div id="start-screen" class="w-full max-w-2xl mx-auto text-center">
+        <div class="start-screen-content bg-white/90 backdrop-blur-sm p-8 rounded-2xl shadow-2xl border border-white/20">
+            <h1 class="text-5xl sm:text-6xl font-extrabold tracking-tight bg-gradient-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent drop-shadow-sm uppercase">JOGO DA FORCA</h1>
+            <h2 class="text-3xl font-bold text-gray-700">BLING</h2>
+            <div class="text-left my-8 text-gray-600 space-y-4">
+                <h3 class="text-xl font-bold text-gray-800 text-center">REGRAS DO JOGO</h3>
+                <p><span class="font-bold text-green-600">Objetivo:</span> Adivinhe a palavra ou expressão do universo Bling letra por letra.</p>
+                <p><span class="font-bold text-green-600">Como Vencer:</span> Alcance uma sequência de <span class="font-bold text-xl">10 vitórias</span> para zerar o jogo e provar que você é um mestre!</p>
+                <p><span class="font-bold text-red-600">Cuidado:</span> Se você errar 6 letras, você perde a rodada e sua sequência de vitórias é zerada!</p>
+            </div>
+            <button id="start-game-btn" class="w-full bg-green-600 text-white font-bold py-4 px-4 rounded-lg text-xl hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-500 focus:ring-opacity-50 transform hover:scale-105 transition-transform">
+                COMEÇAR
+            </button>
+        </div>
+    </div>
+    
+    <!-- Tela Principal do Jogo -->
+    <div id="game-screen" class="hidden w-full max-w-4xl mx-auto">
+        <div class="relative bg-white/90 backdrop-blur-sm p-6 sm:p-8 rounded-2xl shadow-2xl border border-white/20">
+            <!-- Contador de Sequência de Vitórias -->
+            <div class="absolute top-4 right-4 sm:top-6 sm:right-6 text-right">
+                <div class="bg-gray-700 text-white p-2 px-3 rounded-full shadow-lg flex items-center gap-2">
+                    <span class="font-bold text-sm">👑 Recorde</span>
+                    <span id="best-streak-counter" class="font-bold text-lg">0</span>
+                </div>
+                <div class="bg-amber-400 text-white p-2 px-3 rounded-full shadow-lg flex items-center gap-2 mt-2">
+                    <span class="font-bold text-sm">🏆 Atual</span>
+                    <span id="streak-counter" class="font-bold text-lg">0</span>
+                </div>
+            </div>
+
+            <header class="text-center mb-6">
+                <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent drop-shadow-sm uppercase">JOGO DA FORCA</h1>
+                <p class="text-green-600 mt-2 font-semibold">Edição Glossário Bling</p>
+            </header>
+
+            <main class="flex flex-col lg:flex-row gap-8">
+                <div class="w-full lg:w-1/3 flex items-center justify-center">
+                    <svg height="250" width="200" viewBox="0 0 200 250" class="max-w-[200px] w-full">
+                        <line x1="10" y1="230" x2="130" y2="230" style="stroke:#4ade80; stroke-width:5" /><line x1="70" y1="230" x2="70" y2="20" style="stroke:#4ade80; stroke-width:5" /><line x1="70" y1="20" x2="150" y2="20" style="stroke:#4ade80; stroke-width:5" /><line x1="150" y1="20" x2="150" y2="50" style="stroke:#4ade80; stroke-width:5" />
+                        <circle cx="150" cy="70" r="20" class="hangman-part" id="head" /><line x1="150" y1="90" x2="150" y2="150" class="hangman-part" id="body" /><line x1="150" y1="110" x2="120" y2="130" class="hangman-part" id="left-arm" /><line x1="150" y1="110" x2="180" y2="130" class="hangman-part" id="right-arm" /><line x1="150" y1="150" x2="120" y2="180" class="hangman-part" id="left-leg" /><line x1="150" y1="150" x2="180" y2="180" class="hangman-part" id="right-leg" />
+                    </svg>
+                </div>
+                <div class="w-full lg:w-2/3 flex flex-col justify-between">
+                    <div>
+                        <div id="word-container" class="flex flex-wrap justify-center items-center mb-6 min-h-[50px]"></div>
+                        <div id="keyboard-container" class="flex flex-wrap justify-center gap-2"></div>
+                    </div>
+                    <div class="text-center mt-6">
+                         <p class="text-sm text-gray-500">Erros: <span id="wrong-guesses" class="font-bold">0</span> de 6</p>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal de Fim de Jogo (Vitória/Derrota normal) -->
+    <div id="modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 hidden">
+        <div id="modal-content-box" class="modal-content bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center">
+            <div id="icon-container" class="mb-4"></div>
+            <h2 id="modal-title" class="text-3xl font-bold mb-4"></h2>
+            <div class="mb-6 text-left">
+                <p class="text-gray-600">A palavra era:</p>
+                <p id="correct-word" class="text-2xl font-semibold text-green-600 mb-4"></p>
+                <div id="definition-container" class="hidden">
+                    <p class="text-gray-600">Significado:</p>
+                    <p id="word-definition"></p>
+                </div>
+            </div>
+            <button id="play-again-btn" class="w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transform hover:scale-105 transition-transform">
+                Jogar Novamente
+            </button>
+        </div>
+    </div>
+
+    <!-- Tela de Vitória Final (10 vitórias) -->
+    <div id="final-victory-screen" class="hidden fixed inset-0 bg-gradient-to-br from-emerald-900 via-green-900 to-gray-900 flex flex-col items-center justify-center p-4 text-white text-center">
+        <div class="final-victory-content">
+            <div class="text-8xl mb-4">🎉👑🎉</div>
+            <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-amber-300 drop-shadow-lg">MESTRE DO BLING!</h1>
+            <p class="text-xl mt-4 max-w-2xl">Parabéns, você conhece muito bem os termos utilizados no sistema Bling.</p>
+            <p class="text-lg mt-2">Você alcançou <span class="font-bold text-2xl text-amber-300">10</span> vitórias seguidas!</p>
+            <button id="restart-game-btn" class="mt-8 bg-amber-400 text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-amber-500 focus:outline-none focus:ring-4 focus:ring-amber-300 focus:ring-opacity-50 transform hover:scale-105 transition-transform">
+                Jogar Novamente
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // --- DADOS DO GLOSSÁRIO (LISTA COMPLETA) ---
+        const glossary = [
+            { term: "Alfa", definition: "Versão 'crua' e síncrona do sistema, utilizada internamente para identificar erros." },
+            { term: "Alias de Pagamento", definition: "Identificador da forma de pagamento no canal de venda, usado para importar formas de pagamento com parcelas corretas automaticamente." },
+            { term: "Alias Logístico", definition: "Código que conecta a logística ao pedido de venda importado, automatizando a seleção do serviço de entrega." },
+            { term: "API", definition: "Interface que permite a troca de dados entre sistemas para automação e integração personalizada." },
+            { term: "ASIN", definition: "Composição do identificador de produto da Amazon, incluindo SKU, GTIN, marca, categoria, entre outros." },
+            { term: "Base de Conhecimento", definition: "Fonte de consulta para construir respostas, não uma base de respostas prontas." },
+            { term: "Balanço de Estoque", definition: "Atualiza o saldo do estoque, substituindo o valor anterior." },
+            { term: "Beta", definition: "Versão do sistema para testadores, onde atualizações são lançadas primeiro para identificação de erros." },
+            { term: "Caixa e Bancos", definition: "Menu onde são registrados e visualizados os recebimentos e pagamentos, após a baixa das contas." },
+            { term: "Campos Customizados", definition: "Atributos específicos exigidos pelas lojas virtuais e marketplaces para os produtos." },
+            { term: "Carta de Correção", definition: "Permite corrigir dados do transportador, CFOP (se não mudar natureza de impostos) e Código da Situação Tributária (se não alterar valores fiscais). Não corrige endereço do destinatário." },
+            { term: "Categorização de Tickets", definition: "Importante para o time de produto planejar melhorias no sistema." },
+            { term: "Central de Ajuda", definition: "Contém artigos que servem de base para criar respostas e auxiliar na compreensão." },
+            { term: "Conferência de Estoque", definition: "Ferramenta para contagem e ajuste do estoque, requer SKU ou código de barras no produto." },
+            { term: "Controle de Caixa", definition: "Destinado a registrar movimentações financeiras do Frente de Caixa." },
+            { term: "Cubagem Automática", definition: "Parâmetro que seleciona automaticamente a embalagem ideal com menor volume para os itens do pedido." },
+            { term: "DANFE Simplificado", definition: "Nota fiscal resumida, pode ser impressa junto com a etiqueta de transporte." },
+            { term: "DBA", definition: "Delivery by Amazon, ferramenta de entrega da Amazon que agiliza o processo de envio." },
+            { term: "ERP", definition: "Sistema de software que gerencia toda a empresa, automatizando processos financeiros, de RH, produção, entre outros." },
+            { term: "Estoque Virtual", definition: "O saldo da composição é baseado no estoque dos componentes, utilizando a menor quantidade disponível, e não pode ser alterado." },
+            { term: "Fulfillment", definition: "Modalidade de venda onde a plataforma é responsável pelo envio da mercadoria ao cliente." },
+            { term: "Gerenciador de Transições", definition: "Automação que permite lançar estoque e contas, ou estorná-los, de acordo com as situações dos pedidos (ex: de 'Em Aberto' para 'Atendido' ou 'Cancelado')." },
+            { term: "GTIN", definition: "Código de barras utilizado para identificar produtos." },
+            { term: "Hub", definition: "Dispositivo que centraliza conexões e permite comunicação com diversas plataformas." },
+            { term: "ID na Loja", definition: "Código alfanumérico responsável pelo vínculo multiloja dos produtos do Bling com a loja virtual." },
+            { term: "Logística Reversa", definition: "Facilita a troca e devolução de vendas online sem custo para o consumidor. É possível gerar um código de reversão via Correios e Envios por Melhor Envio." },
+            { term: "Marketplace", definition: "Plataforma online que reúne lojistas, como um shopping center virtual." },
+            { term: "NCM", definition: "(Nomenclatura Comum do Mercosul) Campo obrigatório para emissão de nota fiscal, usado para categorização de mercadorias." },
+            { term: "NFCe", definition: "Nota fiscal para vendas físicas, sem obrigatoriedade de CPF do cliente, utilizada em todos os estados brasileiros, exceto SC." },
+            { term: "NFe", definition: "Nota fiscal para vendas de e-commerce, marketplace ou para CNPJ." },
+            { term: "Objeto Logístico", definition: "Necessário inserir um para cada volume a ser enviado ao transportador." },
+            { term: "Ordem de Produção", definition: "Requer produto no formato 'Com composição', produção 'Própria' e estoque 'Físico', e considera apenas 1 produto por ordem." },
+            { term: "Origem", definition: "Campo obrigatório para emissão de nota fiscal, que define a procedência do produto." },
+            { term: "Painel", definition: "Ambiente administrativo da loja virtual do seller." },
+            { term: "POST", definition: "Método API que permite cadastrar novos produtos no sistema, aceitando a remoção de campos não obrigatórios no JSON." },
+            { term: "QZ Tray", definition: "Programa usado para comunicação com impressoras térmicas (ZPL e PDF) para impressão automática." },
+            { term: "Quente", definition: "Versão finalizada e mais estável do sistema, utilizando a URL padrão do Bling." },
+            { term: "Remessa", definition: "Envia dados da venda ou nota fiscal do Bling para a logística, permitindo a impressão de etiquetas." },
+            { term: "Reserva de Estoque", definition: "Garante um produto para um cliente, independentemente do pagamento, considerando as situações dos pedidos para dar baixa nas lojas virtuais." },
+            { term: "Sangria", definition: "(Frente de Caixa) Registra a retirada de valores do caixa." },
+            { term: "SAT", definition: "Sistema Autenticador e Transmissor de Cupons Fiscais Eletrônicos, utilizado no estado de São Paulo para NFC-e." },
+            { term: "SEFAZ", definition: "Secretaria da Fazenda, órgão que fiscaliza receitas/despesas estaduais e controla emissão de NF-e." },
+            { term: "Seller", definition: "Termo utilizado para se referir ao cliente (vendedor) do Bling." },
+            { term: "Suprimento", definition: "(Frente de Caixa) Registra a inserção de valores no caixa." },
+            { term: "Taxas de Marketplaces", definition: "Taxas cobradas por cada marketplace, como comissões ou fretes." },
+            { term: "XML de Notas Fiscais", definition: "Arquivo digital que contém todas as informações fiscais da nota." },
+            { term: "ZPL", definition: "Formato utilizado para impressão de etiquetas 15x10 (impressoras térmicas)." }
+        ];
+
+        // --- ELEMENTOS DO DOM ---
+        const startScreen = document.getElementById('start-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const finalVictoryScreen = document.getElementById('final-victory-screen');
+        const startGameBtn = document.getElementById('start-game-btn');
+        const restartGameBtn = document.getElementById('restart-game-btn');
+        const wordContainer = document.getElementById('word-container');
+        const keyboardContainer = document.getElementById('keyboard-container');
+        const wrongGuessesEl = document.getElementById('wrong-guesses');
+        const streakCounterEl = document.getElementById('streak-counter');
+        const bestStreakCounterEl = document.getElementById('best-streak-counter');
+        const modal = document.getElementById('modal');
+        const modalContentBox = document.getElementById('modal-content-box');
+        const iconContainer = document.getElementById('icon-container');
+        const modalTitle = document.getElementById('modal-title');
+        const correctWordEl = document.getElementById('correct-word');
+        const wordDefinitionEl = document.getElementById('word-definition');
+        const definitionContainer = document.getElementById('definition-container');
+        const playAgainBtn = document.getElementById('play-again-btn');
+        const hangmanParts = ['head', 'body', 'left-arm', 'right-arm', 'left-leg', 'right-leg'];
+
+        // --- ESTADO DO JOGO ---
+        let selectedWord;
+        let guessedLetters;
+        let wrongGuesses;
+        let currentStreak = 0;
+        let bestStreak = 0;
+        const MAX_WRONG_GUESSES = 6;
+        const WIN_STREAK_GOAL = 10;
+
+        // --- FUNÇÕES DO JOGO ---
+
+        /** Atualiza a exibição da sequência de vitórias */
+        const updateStreakDisplay = () => {
+            streakCounterEl.textContent = currentStreak;
+            bestStreakCounterEl.textContent = bestStreak;
+        };
+
+        /** Carrega dados salvos e atualiza a tela */
+        const loadGameData = () => {
+            currentStreak = parseInt(localStorage.getItem('hangmanCurrentStreak')) || 0;
+            bestStreak = parseInt(localStorage.getItem('hangmanBestStreak')) || 0;
+            updateStreakDisplay();
+        };
+
+        /** Normaliza uma string removendo acentos e convertendo para maiúsculas */
+        const normalizeString = (str) => {
+            return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
+        };
+
+        /** Inicia uma nova rodada do jogo */
+        const startRound = () => {
+            loadGameData();
+            guessedLetters = new Set();
+            wrongGuesses = 0;
+            selectedWord = glossary[Math.floor(Math.random() * glossary.length)];
+            
+            renderWord();
+            renderKeyboard();
+            updateHangmanDrawing();
+            wrongGuessesEl.textContent = wrongGuesses;
+
+            modal.classList.add('hidden');
+            definitionContainer.classList.add('hidden');
+            startScreen.classList.add('hidden');
+            finalVictoryScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+        };
+
+        /** Renderiza a palavra a ser adivinhada */
+        const renderWord = () => {
+            wordContainer.innerHTML = '';
+            const normalizedTerm = normalizeString(selectedWord.term);
+            normalizedTerm.split('').forEach(letter => {
+                const box = document.createElement('div');
+                if (letter === ' ') {
+                    box.classList.add('space-box');
+                } else {
+                    box.classList.add('letter-box');
+                    if (guessedLetters.has(letter) || letter === '-') {
+                        box.textContent = letter;
+                    }
+                }
+                wordContainer.appendChild(box);
+            });
+        };
+
+        /** Renderiza o teclado virtual */
+        const renderKeyboard = () => {
+            keyboardContainer.innerHTML = '';
+            const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            alphabet.split('').forEach(letter => {
+                const button = document.createElement('button');
+                button.textContent = letter;
+                button.classList.add('keyboard-btn', 'w-10', 'h-10', 'sm:w-12', 'sm:h-12', 'bg-green-100', 'text-green-800', 'font-bold', 'rounded-lg', 'hover:bg-green-200', 'focus:outline-none', 'focus:ring-2', 'focus:ring-green-500');
+                button.addEventListener('click', () => handleGuess(letter));
+                keyboardContainer.appendChild(button);
+            });
+        };
+
+        /** Processa o palpite do jogador */
+        const handleGuess = (letter) => {
+            if (guessedLetters.has(letter)) return;
+            guessedLetters.add(letter);
+            
+            const buttons = keyboardContainer.getElementsByTagName('button');
+            for (let btn of buttons) {
+                if (btn.textContent === letter) {
+                    btn.disabled = true;
+                    btn.classList.remove('hover:bg-green-200');
+                    btn.classList.add('bg-gray-200');
+                }
+            }
+
+            const normalizedTerm = normalizeString(selectedWord.term);
+            if (normalizedTerm.includes(letter)) {
+                renderWord();
+            } else {
+                wrongGuesses++;
+                wrongGuessesEl.textContent = wrongGuesses;
+                updateHangmanDrawing();
+            }
+            checkGameStatus();
+        };
+
+        /** Atualiza o desenho do boneco na forca */
+        const updateHangmanDrawing = () => {
+            hangmanParts.forEach((part, index) => {
+                document.getElementById(part).style.opacity = (index < wrongGuesses) ? '1' : '0';
+            });
+        };
+
+        /** Verifica se o jogo terminou (vitória ou derrota) */
+        const checkGameStatus = () => {
+            const normalizedTerm = normalizeString(selectedWord.term);
+            const wordLetters = new Set(normalizedTerm.replace(/[^A-Z]/g, ''));
+            const won = [...wordLetters].every(letter => guessedLetters.has(letter));
+
+            if (won) {
+                currentStreak++;
+                if (currentStreak > bestStreak) {
+                    bestStreak = currentStreak;
+                }
+                localStorage.setItem('hangmanCurrentStreak', currentStreak);
+                localStorage.setItem('hangmanBestStreak', bestStreak);
+                updateStreakDisplay();
+
+                if (currentStreak === WIN_STREAK_GOAL) {
+                    setTimeout(showFinalVictory, 500);
+                } else {
+                    setTimeout(() => showModal(true), 500);
+                }
+            } else if (wrongGuesses >= MAX_WRONG_GUESSES) {
+                currentStreak = 0;
+                localStorage.setItem('hangmanCurrentStreak', currentStreak);
+                updateStreakDisplay();
+                setTimeout(() => showModal(false), 500);
+            }
+        };
+
+        /** Mostra o modal de fim de jogo (vitória/derrota normal) */
+        const showModal = (isWinner) => {
+            modalContentBox.classList.remove('modal-winner');
+            modalTitle.classList.remove('text-green-600', 'text-red-600');
+            iconContainer.innerHTML = '';
+
+            if (isWinner) {
+                modalContentBox.classList.add('modal-winner');
+                modalTitle.textContent = 'Você Venceu!';
+                iconContainer.innerHTML = `<div class="flex justify-center items-center"><span class="text-5xl opacity-70">🏆</span><span class="text-7xl mx-2">🏆</span><span class="text-5xl opacity-70">🏆</span></div>`;
+                wordDefinitionEl.textContent = selectedWord.definition;
+                definitionContainer.classList.remove('hidden');
+            } else {
+                modalTitle.textContent = 'Fim de Jogo!';
+                modalTitle.classList.add('text-red-600');
+                definitionContainer.classList.add('hidden');
+            }
+            correctWordEl.textContent = selectedWord.term;
+            modal.classList.remove('hidden');
+        };
+        
+        /** Mostra a tela de vitória final */
+        const showFinalVictory = () => {
+            gameScreen.classList.add('hidden');
+            finalVictoryScreen.classList.remove('hidden');
+        };
+        
+        /** Reinicia o jogo completamente, zerando a sequência e voltando para a tela inicial */
+        const resetGame = () => {
+            currentStreak = 0;
+            localStorage.setItem('hangmanCurrentStreak', currentStreak);
+            finalVictoryScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+        };
+
+        // --- EVENT LISTENERS ---
+        startGameBtn.addEventListener('click', startRound);
+        playAgainBtn.addEventListener('click', startRound);
+        restartGameBtn.addEventListener('click', resetGame);
+
+        // Carrega os dados do jogo na inicialização
+        document.addEventListener('DOMContentLoaded', loadGameData);
+    </script>
+</body>
+</html>
+
