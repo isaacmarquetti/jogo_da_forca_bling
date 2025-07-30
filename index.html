@@ -7,10 +7,13 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Poppins', sans-serif;
+        }
+        .font-roboto-slab {
+            font-family: 'Roboto Slab', serif;
         }
         .letter-box {
             width: 40px;
@@ -20,7 +23,7 @@
             justify-content: center;
             align-items: center;
             font-size: 1.5rem;
-            margin: 0 4px;
+            margin: 4px;
             text-transform: uppercase;
             font-weight: 600;
             color: #1f2937;
@@ -28,6 +31,7 @@
         .space-box {
             width: 20px;
             height: 40px;
+            display: inline-block;
         }
         @media (min-width: 640px) {
             .letter-box {
@@ -46,9 +50,9 @@
             opacity: 0.4;
             cursor: not-allowed;
         }
-        .hangman-part {
+        .hangman-part, .face-part {
             stroke: #1f2937;
-            stroke-width: 4;
+            stroke-width: 3;
             fill: none;
             stroke-linecap: round;
             transition: opacity 0.3s ease-in-out;
@@ -98,14 +102,15 @@
 
     <!-- Tela de Início -->
     <div id="start-screen" class="w-full max-w-2xl mx-auto text-center">
+        <h1 class="font-roboto-slab text-6xl sm:text-7xl font-black text-white uppercase tracking-wide" style="text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Jogo da Forca</h1>
+        <h2 class="font-roboto-slab text-4xl sm:text-5xl font-black text-green-300 uppercase tracking-wider mb-8" style="text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Bling</h2>
         <div class="start-screen-content bg-white/90 backdrop-blur-sm p-8 rounded-2xl shadow-2xl border border-white/20">
-            <h1 class="text-5xl sm:text-6xl font-extrabold tracking-tight bg-gradient-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent drop-shadow-sm uppercase">JOGO DA FORCA</h1>
-            <h2 class="text-3xl font-bold text-gray-700">BLING</h2>
-            <div class="text-left my-8 text-gray-600 space-y-4">
+            <div class="text-left text-gray-600 space-y-4 mb-8">
                 <h3 class="text-xl font-bold text-gray-800 text-center">REGRAS DO JOGO</h3>
-                <p><span class="font-bold text-green-600">Objetivo:</span> Adivinhe a palavra ou expressão do universo Bling letra por letra.</p>
-                <p><span class="font-bold text-green-600">Como Vencer:</span> Alcance uma sequência de <span class="font-bold text-xl">10 vitórias</span> para zerar o jogo e provar que você é um mestre!</p>
-                <p><span class="font-bold text-red-600">Cuidado:</span> Se você errar 6 letras, você perde a rodada e sua sequência de vitórias é zerada!</p>
+                <p><span class="font-bold text-green-600">🎯 Objetivo:</span> Adivinhe a palavra ou expressão do universo Bling letra por letra.</p>
+                <p><span class="font-bold text-green-600">💡 Aprendizado:</span> Ao acertar a palavra, seu significado é revelado. Aprenda e domine os termos!</p>
+                <p><span class="font-bold text-green-600">🏆 Como Vencer:</span> Alcance uma sequência de <span class="font-bold text-xl">10 vitórias</span> para zerar o jogo e provar que você é um mestre!</p>
+                <p><span class="font-bold text-red-600">⚠️ Cuidado:</span> Se você errar 6 letras, você perde a rodada e sua sequência de vitórias é zerada!</p>
             </div>
             <button id="start-game-btn" class="w-full bg-green-600 text-white font-bold py-4 px-4 rounded-lg text-xl hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-500 focus:ring-opacity-50 transform hover:scale-105 transition-transform">
                 COMEÇAR
@@ -114,7 +119,7 @@
     </div>
     
     <!-- Tela Principal do Jogo -->
-    <div id="game-screen" class="hidden w-full max-w-4xl mx-auto">
+    <div id="game-screen" class="hidden w-full max-w-5xl mx-auto">
         <div class="relative bg-white/90 backdrop-blur-sm p-6 sm:p-8 rounded-2xl shadow-2xl border border-white/20">
             <!-- Contador de Sequência de Vitórias -->
             <div class="absolute top-4 right-4 sm:top-6 sm:right-6 text-right">
@@ -137,13 +142,29 @@
                 <div class="w-full lg:w-1/3 flex items-center justify-center">
                     <svg height="250" width="200" viewBox="0 0 200 250" class="max-w-[200px] w-full">
                         <line x1="10" y1="230" x2="130" y2="230" style="stroke:#4ade80; stroke-width:5" /><line x1="70" y1="230" x2="70" y2="20" style="stroke:#4ade80; stroke-width:5" /><line x1="70" y1="20" x2="150" y2="20" style="stroke:#4ade80; stroke-width:5" /><line x1="150" y1="20" x2="150" y2="50" style="stroke:#4ade80; stroke-width:5" />
-                        <circle cx="150" cy="70" r="20" class="hangman-part" id="head" /><line x1="150" y1="90" x2="150" y2="150" class="hangman-part" id="body" /><line x1="150" y1="110" x2="120" y2="130" class="hangman-part" id="left-arm" /><line x1="150" y1="110" x2="180" y2="130" class="hangman-part" id="right-arm" /><line x1="150" y1="150" x2="120" y2="180" class="hangman-part" id="left-leg" /><line x1="150" y1="150" x2="180" y2="180" class="hangman-part" id="right-leg" />
+                        
+                        <!-- Boneco -->
+                        <g id="hangman-figure">
+                            <circle cx="150" cy="70" r="20" class="hangman-part" id="head" style="stroke-width: 4; fill: #fff;" />
+                            <line x1="150" y1="90" x2="150" y2="150" class="hangman-part" id="body" style="stroke-width: 4;" />
+                            <line x1="150" y1="110" x2="120" y2="130" class="hangman-part" id="left-arm" style="stroke-width: 4;" />
+                            <line x1="150" y1="110" x2="180" y2="130" class="hangman-part" id="right-arm" style="stroke-width: 4;" />
+                            <line x1="150" y1="150" x2="120" y2="180" class="hangman-part" id="left-leg" style="stroke-width: 4;" />
+                            <line x1="150" y1="150" x2="180" y2="180" class="hangman-part" id="right-leg" style="stroke-width: 4;" />
+                            
+                            <!-- Expressões Faciais -->
+                            <g id="face-neutral" class="face-part"><circle cx="143" cy="68" r="2"/><circle cx="157" cy="68" r="2"/><line x1="145" y1="78" x2="155" y2="78"/></g>
+                            <g id="face-worried" class="face-part"><circle cx="143" cy="68" r="2"/><circle cx="157" cy="68" r="2"/><path d="M 145 78 Q 150 75 155 78"/><path d="M 143 71 C 140 75, 140 80, 143 82 C 146 80, 146 75, 143 71" style="fill:#3b82f6; stroke: none;"/></g>
+                            <g id="face-despair" class="face-part"><circle cx="143" cy="68" r="2.5"/><circle cx="157" cy="68" r="2.5"/><ellipse cx="150" cy="80" rx="7" ry="4"/></g>
+                            <g id="face-dead" class="face-part" style="stroke-width: 4;"><line x1="140" y1="65" x2="148" y2="73"/><line x1="148" y1="65" x2="140" y2="73"/><line x1="154" y1="65" x2="162" y2="73"/><line x1="162" y1="65" x2="154" y2="73"/></g>
+                            <g id="face-happy" class="face-part"><circle cx="143" cy="68" r="2"/><circle cx="157" cy="68" r="2"/><path d="M 145 78 Q 150 83 155 78"/></g>
+                        </g>
                     </svg>
                 </div>
                 <div class="w-full lg:w-2/3 flex flex-col justify-between">
                     <div>
                         <div id="word-container" class="flex flex-wrap justify-center items-center mb-6 min-h-[50px]"></div>
-                        <div id="keyboard-container" class="flex flex-wrap justify-center gap-2"></div>
+                        <div id="keyboard-container" class="flex flex-col items-center gap-2"></div>
                     </div>
                     <div class="text-center mt-6">
                          <p class="text-sm text-gray-500">Erros: <span id="wrong-guesses" class="font-bold">0</span> de 6</p>
@@ -167,7 +188,7 @@
                 </div>
             </div>
             <button id="play-again-btn" class="w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transform hover:scale-105 transition-transform">
-                Jogar Novamente
+                Continuar Jogando
             </button>
         </div>
     </div>
@@ -257,6 +278,7 @@
         const definitionContainer = document.getElementById('definition-container');
         const playAgainBtn = document.getElementById('play-again-btn');
         const hangmanParts = ['head', 'body', 'left-arm', 'right-arm', 'left-leg', 'right-leg'];
+        const faceParts = ['face-neutral', 'face-worried', 'face-despair', 'face-dead', 'face-happy'];
 
         // --- ESTADO DO JOGO ---
         let selectedWord;
@@ -269,25 +291,32 @@
 
         // --- FUNÇÕES DO JOGO ---
 
-        /** Atualiza a exibição da sequência de vitórias */
         const updateStreakDisplay = () => {
             streakCounterEl.textContent = currentStreak;
             bestStreakCounterEl.textContent = bestStreak;
         };
 
-        /** Carrega dados salvos e atualiza a tela */
         const loadGameData = () => {
             currentStreak = parseInt(localStorage.getItem('hangmanCurrentStreak')) || 0;
             bestStreak = parseInt(localStorage.getItem('hangmanBestStreak')) || 0;
             updateStreakDisplay();
         };
 
-        /** Normaliza uma string removendo acentos e convertendo para maiúsculas */
         const normalizeString = (str) => {
             return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
         };
+        
+        const updateFaceExpression = (expression) => {
+            faceParts.forEach(part => {
+                const el = document.getElementById(part);
+                if (el) el.style.opacity = '0';
+            });
+            if (expression) {
+                const el = document.getElementById(`face-${expression}`);
+                if (el) el.style.opacity = '1';
+            }
+        };
 
-        /** Inicia uma nova rodada do jogo */
         const startRound = () => {
             loadGameData();
             guessedLetters = new Set();
@@ -306,38 +335,55 @@
             gameScreen.classList.remove('hidden');
         };
 
-        /** Renderiza a palavra a ser adivinhada */
         const renderWord = () => {
             wordContainer.innerHTML = '';
-            const normalizedTerm = normalizeString(selectedWord.term);
-            normalizedTerm.split('').forEach(letter => {
-                const box = document.createElement('div');
-                if (letter === ' ') {
-                    box.classList.add('space-box');
-                } else {
+            const words = selectedWord.term.split(' ');
+
+            words.forEach((word, index) => {
+                const wordWrapper = document.createElement('div');
+                wordWrapper.classList.add('inline-flex', 'flex-nowrap');
+
+                const normalizedWord = normalizeString(word);
+                normalizedWord.split('').forEach(letter => {
+                    const box = document.createElement('div');
                     box.classList.add('letter-box');
                     if (guessedLetters.has(letter) || letter === '-') {
                         box.textContent = letter;
                     }
+                    wordWrapper.appendChild(box);
+                });
+                wordContainer.appendChild(wordWrapper);
+
+                if (index < words.length - 1) {
+                    const space = document.createElement('div');
+                    space.classList.add('space-box');
+                    wordContainer.appendChild(space);
                 }
-                wordContainer.appendChild(box);
             });
         };
 
-        /** Renderiza o teclado virtual */
         const renderKeyboard = () => {
             keyboardContainer.innerHTML = '';
-            const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-            alphabet.split('').forEach(letter => {
-                const button = document.createElement('button');
-                button.textContent = letter;
-                button.classList.add('keyboard-btn', 'w-10', 'h-10', 'sm:w-12', 'sm:h-12', 'bg-green-100', 'text-green-800', 'font-bold', 'rounded-lg', 'hover:bg-green-200', 'focus:outline-none', 'focus:ring-2', 'focus:ring-green-500');
-                button.addEventListener('click', () => handleGuess(letter));
-                keyboardContainer.appendChild(button);
+            const keysByRow = [
+                'ABCDEFGHI',
+                'JKLMNOPQR',
+                'STUVWXYZ'
+            ];
+
+            keysByRow.forEach(rowString => {
+                const rowDiv = document.createElement('div');
+                rowDiv.classList.add('flex', 'justify-center', 'gap-2');
+                rowString.split('').forEach(key => {
+                    const button = document.createElement('button');
+                    button.textContent = key;
+                    button.classList.add('keyboard-btn', 'w-10', 'h-10', 'sm:w-12', 'sm:h-12', 'bg-green-100', 'text-green-800', 'font-bold', 'rounded-lg', 'hover:bg-green-200', 'focus:outline-none', 'focus:ring-2', 'focus:ring-green-500');
+                    button.addEventListener('click', () => handleGuess(key));
+                    rowDiv.appendChild(button);
+                });
+                keyboardContainer.appendChild(rowDiv);
             });
         };
 
-        /** Processa o palpite do jogador */
         const handleGuess = (letter) => {
             if (guessedLetters.has(letter)) return;
             guessedLetters.add(letter);
@@ -362,14 +408,24 @@
             checkGameStatus();
         };
 
-        /** Atualiza o desenho do boneco na forca */
         const updateHangmanDrawing = () => {
+            // Mostra as partes do corpo
             hangmanParts.forEach((part, index) => {
                 document.getElementById(part).style.opacity = (index < wrongGuesses) ? '1' : '0';
             });
+            
+            // Atualiza a expressão facial com base no número de erros
+            switch(wrongGuesses) {
+                case 0: updateFaceExpression(null); break;
+                case 1: updateFaceExpression('neutral'); break;
+                case 2: break; // Sem mudança
+                case 3: updateFaceExpression('worried'); break;
+                case 4: break; // Sem mudança
+                case 5: updateFaceExpression('despair'); break;
+                case 6: updateFaceExpression('dead'); break;
+            }
         };
 
-        /** Verifica se o jogo terminou (vitória ou derrota) */
         const checkGameStatus = () => {
             const normalizedTerm = normalizeString(selectedWord.term);
             const wordLetters = new Set(normalizedTerm.replace(/[^A-Z]/g, ''));
@@ -397,15 +453,16 @@
             }
         };
 
-        /** Mostra o modal de fim de jogo (vitória/derrota normal) */
         const showModal = (isWinner) => {
             modalContentBox.classList.remove('modal-winner');
             modalTitle.classList.remove('text-green-600', 'text-red-600');
             iconContainer.innerHTML = '';
 
             if (isWinner) {
+                document.getElementById('head').style.opacity = '1';
+                updateFaceExpression('happy');
                 modalContentBox.classList.add('modal-winner');
-                modalTitle.textContent = 'Você Venceu!';
+                modalTitle.textContent = 'Parabéns, você adivinhou!';
                 iconContainer.innerHTML = `<div class="flex justify-center items-center"><span class="text-5xl opacity-70">🏆</span><span class="text-7xl mx-2">🏆</span><span class="text-5xl opacity-70">🏆</span></div>`;
                 wordDefinitionEl.textContent = selectedWord.definition;
                 definitionContainer.classList.remove('hidden');
@@ -418,13 +475,11 @@
             modal.classList.remove('hidden');
         };
         
-        /** Mostra a tela de vitória final */
         const showFinalVictory = () => {
             gameScreen.classList.add('hidden');
             finalVictoryScreen.classList.remove('hidden');
         };
         
-        /** Reinicia o jogo completamente, zerando a sequência e voltando para a tela inicial */
         const resetGame = () => {
             currentStreak = 0;
             localStorage.setItem('hangmanCurrentStreak', currentStreak);
@@ -436,7 +491,7 @@
         startGameBtn.addEventListener('click', startRound);
         playAgainBtn.addEventListener('click', startRound);
         restartGameBtn.addEventListener('click', resetGame);
-
+        
         // Carrega os dados do jogo na inicialização
         document.addEventListener('DOMContentLoaded', loadGameData);
     </script>
