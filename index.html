@@ -116,7 +116,10 @@
                 COMEÇAR
             </button>
             <div class="absolute bottom-2 right-3 text-xs text-gray-400">
-                Versão 1.01
+                Versão 1.02
+            </div>
+            <div class="absolute bottom-2 left-3 text-xs text-gray-500">
+                Desenvolvido por <a href="https://github.com/isaacmarquetti" target="_blank" class="font-semibold text-green-600 hover:underline">Isaac Marquetti</a>
             </div>
         </div>
     </div>
@@ -125,13 +128,12 @@
     <div id="game-screen" class="hidden w-full max-w-7xl mx-auto">
         <div class="relative bg-white/90 backdrop-blur-sm p-6 sm:p-8 rounded-2xl shadow-2xl border border-white/20">
             <!-- Contador de Sequência de Vitórias -->
-            <div class="absolute top-4 right-4 sm:top-6 sm:right-6 text-right">
-                <div class="bg-gray-700 text-white p-2 px-3 rounded-full shadow-lg flex items-center gap-2">
-                    <span class="font-bold text-sm">👑 Recorde</span>
-                    <span id="best-streak-counter" class="font-bold text-lg">0</span>
+            <div class="absolute top-4 right-4 sm:top-6 sm:right-6 flex flex-col items-end space-y-2">
+                <div id="level-display" class="bg-gray-700 text-white p-2 px-4 rounded-full shadow-lg flex items-center gap-2 justify-end">
+                    <!-- Nível atual será inserido aqui -->
                 </div>
-                <div class="bg-amber-400 text-white p-2 px-3 rounded-full shadow-lg flex items-center gap-2 mt-2">
-                    <span class="font-bold text-sm">🏆 Atual</span>
+                 <div class="bg-amber-400 text-white p-2 px-3 rounded-full shadow-lg flex items-center gap-2 justify-end">
+                    <span class="font-bold text-sm">🏆 Sequência</span>
                     <span id="streak-counter" class="font-bold text-lg">0</span>
                 </div>
             </div>
@@ -190,9 +192,17 @@
                     <p id="word-definition"></p>
                 </div>
             </div>
-            <div id="modal-buttons" class="w-full space-y-2">
-                <!-- Botões serão inseridos aqui dinamicamente -->
-            </div>
+            <div id="modal-buttons" class="w-full space-y-2"></div>
+        </div>
+    </div>
+    
+    <!-- Modal de Level Up -->
+    <div id="level-up-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4">
+        <div class="modal-content bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center">
+            <div id="level-up-icon" class="text-7xl mb-4"></div>
+            <h2 id="level-up-title" class="text-3xl font-bold mb-4"></h2>
+            <p id="level-up-message" class="text-gray-600 mb-6"></p>
+            <button id="level-up-continue-btn" class="w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700">Continuar</button>
         </div>
     </div>
 
@@ -322,7 +332,7 @@
         const keyboardContainer = document.getElementById('keyboard-container');
         const wrongGuessesEl = document.getElementById('wrong-guesses');
         const streakCounterEl = document.getElementById('streak-counter');
-        const bestStreakCounterEl = document.getElementById('best-streak-counter');
+        const levelDisplayEl = document.getElementById('level-display');
         const modal = document.getElementById('modal');
         const modalContentBox = document.getElementById('modal-content-box');
         const iconContainer = document.getElementById('icon-container');
@@ -331,6 +341,11 @@
         const wordDefinitionEl = document.getElementById('word-definition');
         const definitionContainer = document.getElementById('definition-container');
         const modalButtonsContainer = document.getElementById('modal-buttons');
+        const levelUpModal = document.getElementById('level-up-modal');
+        const levelUpIcon = document.getElementById('level-up-icon');
+        const levelUpTitle = document.getElementById('level-up-title');
+        const levelUpMessage = document.getElementById('level-up-message');
+        const levelUpContinueBtn = document.getElementById('level-up-continue-btn');
         const hangmanParts = ['head', 'body', 'left-arm', 'right-arm', 'left-leg', 'right-leg'];
         const faceParts = ['face-neutral', 'face-worried', 'face-despair', 'face-dead', 'face-happy'];
 
@@ -346,9 +361,22 @@
 
         // --- FUNÇÕES DO JOGO ---
 
+        const getLevel = (streak) => {
+            if (streak >= 1 && streak <= 6) return { name: 'Bronze', emoji: '🥉', color: 'bg-yellow-600' };
+            if (streak >= 7 && streak <= 13) return { name: 'Prata', emoji: '🥈', color: 'bg-gray-400' };
+            if (streak >= 14 && streak <= 19) return { name: 'Ouro', emoji: '🥇', color: 'bg-amber-500' };
+            if (streak >= 20) return { name: 'Mestre', emoji: '👑', color: 'bg-purple-600' };
+            return { name: 'Iniciante', emoji: '👶', color: 'bg-gray-700' };
+        };
+
         const updateStreakDisplay = () => {
+            const level = getLevel(bestStreak); // O nível é baseado no recorde
+            levelDisplayEl.innerHTML = `
+                <span class="font-bold text-sm">${level.emoji} ${level.name}</span>
+                <span class="font-bold text-lg">${bestStreak}</span>
+            `;
+            levelDisplayEl.className = `p-2 px-4 rounded-full shadow-lg flex items-center gap-2 justify-end ${level.color} text-white`;
             streakCounterEl.textContent = currentStreak;
-            bestStreakCounterEl.textContent = bestStreak;
         };
 
         const loadGameData = () => {
@@ -471,18 +499,14 @@
         };
 
         const updateHangmanDrawing = () => {
-            // Mostra as partes do corpo
             hangmanParts.forEach((part, index) => {
                 document.getElementById(part).style.opacity = (index < wrongGuesses) ? '1' : '0';
             });
             
-            // Atualiza a expressão facial com base no número de erros
             switch(wrongGuesses) {
                 case 0: updateFaceExpression(null); break;
                 case 1: updateFaceExpression('neutral'); break;
-                case 2: break; // Sem mudança
                 case 3: updateFaceExpression('worried'); break;
-                case 4: break; // Sem mudança
                 case 5: updateFaceExpression('despair'); break;
                 case 6: updateFaceExpression('dead'); break;
             }
@@ -494,18 +518,20 @@
             const won = [...wordLetters].every(letter => guessedLetters.has(letter));
 
             if (won) {
+                const levelBefore = getLevel(currentStreak);
                 currentStreak++;
+                const levelAfter = getLevel(currentStreak);
+
                 if (currentStreak > bestStreak) {
                     bestStreak = currentStreak;
                 }
                 localStorage.setItem('hangmanCurrentStreak', currentStreak);
                 localStorage.setItem('hangmanBestStreak', bestStreak);
-                updateStreakDisplay();
 
                 if (currentStreak === WIN_STREAK_GOAL) {
                     setTimeout(showFinalVictory, 500);
                 } else {
-                    setTimeout(() => showModal(true), 500);
+                    setTimeout(() => showModal(true, levelBefore, levelAfter), 500);
                 }
             } else if (wrongGuesses >= MAX_WRONG_GUESSES) {
                 currentStreak = 0;
@@ -514,12 +540,24 @@
                 setTimeout(() => showModal(false), 500);
             }
         };
+        
+        const showLevelUpModal = (level) => {
+            levelUpIcon.textContent = level.emoji;
+            levelUpTitle.textContent = `Você subiu para o Nível ${level.name}!`;
+            if (level.name === 'Prata') {
+                levelUpMessage.textContent = 'Que bom que você evoluiu rumo ao mestre! Vamos lá, ainda falta muito para subir essa montanha de conhecimento até o último nível.';
+            } else if (level.name === 'Ouro') {
+                levelUpMessage.textContent = 'Se já chegamos até aqui, vamos continuar porque falta pouco rumo ao mestre! Vamos lá!';
+            }
+            levelUpModal.classList.remove('hidden');
+        };
 
-        const showModal = (isWinner) => {
+        const showModal = (isWinner, levelBefore, levelAfter) => {
+            updateStreakDisplay();
             modalContentBox.classList.remove('modal-winner');
             modalTitle.classList.remove('text-green-600', 'text-red-600');
             iconContainer.innerHTML = '';
-            modalButtonsContainer.innerHTML = ''; // Limpa os botões anteriores
+            modalButtonsContainer.innerHTML = '';
 
             if (isWinner) {
                 document.getElementById('head').style.opacity = '1';
@@ -533,7 +571,14 @@
                 const continueBtn = document.createElement('button');
                 continueBtn.textContent = 'Continuar Jogando';
                 continueBtn.className = 'w-full bg-white text-green-700 font-bold py-3 px-4 rounded-lg hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transform hover:scale-105 transition-transform';
-                continueBtn.addEventListener('click', startRound);
+                continueBtn.addEventListener('click', () => {
+                    modal.classList.add('hidden');
+                    if(levelBefore.name !== levelAfter.name) {
+                        showLevelUpModal(levelAfter);
+                    } else {
+                        startRound();
+                    }
+                });
                 modalButtonsContainer.appendChild(continueBtn);
 
             } else {
@@ -572,7 +617,7 @@
 
         const resetGame = () => {
             currentStreak = 0;
-            usedWordsInSession = []; // Limpa o histórico de palavras
+            usedWordsInSession = [];
             localStorage.setItem('hangmanCurrentStreak', currentStreak);
             finalVictoryScreen.classList.add('hidden');
             startScreen.classList.remove('hidden');
@@ -581,8 +626,11 @@
         // --- EVENT LISTENERS ---
         startGameBtn.addEventListener('click', startRound);
         restartGameBtn.addEventListener('click', resetGame);
+        levelUpContinueBtn.addEventListener('click', () => {
+            levelUpModal.classList.add('hidden');
+            startRound();
+        });
         
-        // Carrega os dados do jogo na inicialização
         document.addEventListener('DOMContentLoaded', loadGameData);
     </script>
 </body>
