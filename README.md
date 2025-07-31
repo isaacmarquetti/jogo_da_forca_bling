@@ -22,24 +22,48 @@ O jogo é intuitivo e segue a mecânica clássica da forca, com algumas funciona
 
 ## 📝 Versionamento
 
-### Notas da Versão 1.01
+### Notas da Versão 1.02
 
-Esta atualização traz uma expansão significativa do conteúdo e novas regras para tornar o desafio ainda maior, além de melhorias na interface e na jogabilidade.
+Esta versão foca na correção de bugs e na melhoria da experiência do sistema de progressão de níveis.
 
 #### ✨ Novidades
 
-* **Expansão do Glossário:** O banco de palavras foi ampliado para **100 termos e expressões**, utilizando a nova lista fornecida. Isso torna o jogo uma ferramenta de aprendizado ainda mais completa.
+* **Sistema de Níveis:** Foi introduzido um sistema de progressão para engajar o jogador. Os níveis são:
 
-* **Novo Objetivo de Vitória:** O desafio final foi elevado! Agora, o jogador precisa alcançar uma sequência de **20 vitórias consecutivas** para ser coroado o "Mestre do Bling".
+  * **Iniciante (0 vitórias):** 👶
 
-* **Versionamento:** A tela inicial agora exibe a versão atual do jogo (**1.01**) para facilitar o acompanhamento de futuras atualizações.
+  * **Bronze (1-6 vitórias):** 🥉
+
+  * **Prata (7-13 vitórias):** 🥈
+
+  * **Ouro (14-19 vitórias):** 🥇
+
+  * **Mestre (20+ vitórias):** 👑
+
+* **Telas de Evolução:** Ao subir de nível, uma tela de comemoração com uma mensagem de incentivo é exibida.
 
 #### 🛠️ Melhorias e Correções
 
-* **Sem Palavras Repetidas:** Foi implementado um sistema que impede a repetição de palavras durante uma mesma sessão de jogo (até o jogador perder ou atingir o objetivo final).
+* **Correção no Fluxo de Telas:** O fluxo de modais foi corrigido. Agora, a tela de vitória com o significado da palavra sempre aparece antes da tela de "Subiu de Nível", garantindo que o aprendizado não seja interrompido.
 
-* **Layout Responsivo:** A área de exibição da palavra foi aumentada para acomodar melhor as expressões mais longas, evitando que o texto ultrapasse os limites da caixa de jogo.
+* **Persistência de Nível:** O nível do jogador (baseado no recorde) agora é salvo e exibido corretamente no início de cada rodada.
 
-* **Ajuste no Teclado:** O layout do teclado virtual foi restaurado para uma distribuição mais simétrica, com o mesmo número de teclas por fileira.
+* **Alinhamento da Interface:** Os contadores de nível e sequência de vitórias foram realinhados para uma melhor visualização.
 
-* **Regras Atualizadas:** A tela inicial agora reflete a nova regra de 20 vitórias e inclui uma linha explicando que o objetivo é acertar a palavra para ver seu significado.
+* **Ajuste no Botão de Derrota:** A tela de "Fim de Jogo" agora apresenta os botões "Tentar Novamente" e "Ir para o Menu", oferecendo mais opções ao jogador.
+
+* **Emoji de Iniciante:** O emoji do nível "Iniciante" foi alterado para 👶, tornando-o mais temático.
+
+### Notas da Versão 1.01
+
+* **Expansão do Glossário:** O banco de palavras foi ampliado para **100 termos e expressões**.
+
+* **Novo Objetivo de Vitória:** O desafio final foi elevado para **20 vitórias consecutivas**.
+
+* **Versionamento:** A tela inicial agora exibe a versão atual do jogo.
+
+* **Sem Palavras Repetidas:** Implementado sistema que impede a repetição de palavras durante uma mesma sessão.
+
+* **Layout Responsivo:** A área de exibição da palavra foi aumentada para acomodar expressões mais longas.
+
+* **Ajuste no Teclado:** O layout do teclado virtual foi restaurado para uma distribuição mais simétrica.
