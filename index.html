@@ -104,22 +104,25 @@
     <div id="start-screen" class="w-full max-w-2xl mx-auto text-center">
         <h1 class="font-roboto-slab text-6xl sm:text-7xl font-black text-white uppercase tracking-wide" style="text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Jogo da Forca</h1>
         <h2 class="font-roboto-slab text-4xl sm:text-5xl font-black text-green-300 uppercase tracking-wider mb-8" style="text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Bling</h2>
-        <div class="start-screen-content bg-white/90 backdrop-blur-sm p-8 rounded-2xl shadow-2xl border border-white/20">
+        <div class="start-screen-content bg-white/90 backdrop-blur-sm p-8 rounded-2xl shadow-2xl border border-white/20 relative">
             <div class="text-left text-gray-600 space-y-4 mb-8">
                 <h3 class="text-xl font-bold text-gray-800 text-center">REGRAS DO JOGO</h3>
                 <p><span class="font-bold text-green-600">🎯 Objetivo:</span> Adivinhe a palavra ou expressão do universo Bling letra por letra.</p>
                 <p><span class="font-bold text-green-600">💡 Aprendizado:</span> Ao acertar a palavra, seu significado é revelado. Aprenda e domine os termos!</p>
-                <p><span class="font-bold text-green-600">🏆 Como Vencer:</span> Alcance uma sequência de <span class="font-bold text-xl">10 vitórias</span> para zerar o jogo e provar que você é um mestre!</p>
+                <p><span class="font-bold text-green-600">🏆 Como Vencer:</span> Alcance uma sequência de <span class="font-bold text-xl">20 vitórias</span> para zerar o jogo e provar que você é um mestre!</p>
                 <p><span class="font-bold text-red-600">⚠️ Cuidado:</span> Se você errar 6 letras, você perde a rodada e sua sequência de vitórias é zerada!</p>
             </div>
             <button id="start-game-btn" class="w-full bg-green-600 text-white font-bold py-4 px-4 rounded-lg text-xl hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-500 focus:ring-opacity-50 transform hover:scale-105 transition-transform">
                 COMEÇAR
             </button>
+            <div class="absolute bottom-2 right-3 text-xs text-gray-400">
+                Versão 1.01
+            </div>
         </div>
     </div>
     
     <!-- Tela Principal do Jogo -->
-    <div id="game-screen" class="hidden w-full max-w-5xl mx-auto">
+    <div id="game-screen" class="hidden w-full max-w-7xl mx-auto">
         <div class="relative bg-white/90 backdrop-blur-sm p-6 sm:p-8 rounded-2xl shadow-2xl border border-white/20">
             <!-- Contador de Sequência de Vitórias -->
             <div class="absolute top-4 right-4 sm:top-6 sm:right-6 text-right">
@@ -187,19 +190,19 @@
                     <p id="word-definition"></p>
                 </div>
             </div>
-            <button id="play-again-btn" class="w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transform hover:scale-105 transition-transform">
-                Continuar Jogando
-            </button>
+            <div id="modal-buttons" class="w-full space-y-2">
+                <!-- Botões serão inseridos aqui dinamicamente -->
+            </div>
         </div>
     </div>
 
-    <!-- Tela de Vitória Final (10 vitórias) -->
+    <!-- Tela de Vitória Final (20 vitórias) -->
     <div id="final-victory-screen" class="hidden fixed inset-0 bg-gradient-to-br from-emerald-900 via-green-900 to-gray-900 flex flex-col items-center justify-center p-4 text-white text-center">
         <div class="final-victory-content">
             <div class="text-8xl mb-4">🎉👑🎉</div>
             <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-amber-300 drop-shadow-lg">MESTRE DO BLING!</h1>
             <p class="text-xl mt-4 max-w-2xl">Parabéns, você conhece muito bem os termos utilizados no sistema Bling.</p>
-            <p class="text-lg mt-2">Você alcançou <span class="font-bold text-2xl text-amber-300">10</span> vitórias seguidas!</p>
+            <p class="text-lg mt-2">Você alcançou <span class="font-bold text-2xl text-amber-300">20</span> vitórias seguidas!</p>
             <button id="restart-game-btn" class="mt-8 bg-amber-400 text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-amber-500 focus:outline-none focus:ring-4 focus:ring-amber-300 focus:ring-opacity-50 transform hover:scale-105 transition-transform">
                 Jogar Novamente
             </button>
@@ -209,51 +212,102 @@
     <script>
         // --- DADOS DO GLOSSÁRIO (LISTA COMPLETA) ---
         const glossary = [
+            { term: "Access token", definition: "(API) Chave de acesso com tempo de expiração de 6 horas." },
             { term: "Alfa", definition: "Versão 'crua' e síncrona do sistema, utilizada internamente para identificar erros." },
             { term: "Alias de Pagamento", definition: "Identificador da forma de pagamento no canal de venda, usado para importar formas de pagamento com parcelas corretas automaticamente." },
             { term: "Alias Logístico", definition: "Código que conecta a logística ao pedido de venda importado, automatizando a seleção do serviço de entrega." },
+            { term: "Ambiente de Contingência", definition: "Modo de emissão de NF-e quando a SEFAZ está inoperante." },
             { term: "API", definition: "Interface que permite a troca de dados entre sistemas para automação e integração personalizada." },
             { term: "ASIN", definition: "Composição do identificador de produto da Amazon, incluindo SKU, GTIN, marca, categoria, entre outros." },
-            { term: "Base de Conhecimento", definition: "Fonte de consulta para construir respostas, não uma base de respostas prontas." },
+            { term: "Authorization code", definition: "Código de autorização com tempo de expiração de 1 minuto, usado para obter tokens pela primeira vez." },
+            { term: "Balancete", definition: "Relatório financeiro que permite exibir e comparar saldos de contas em diferentes períodos, útil para verificar a movimentação do Caixa e Bancos." },
             { term: "Balanço de Estoque", definition: "Atualiza o saldo do estoque, substituindo o valor anterior." },
+            { term: "Base de Conhecimento", definition: "Fonte de consulta para construir respostas, não uma base de respostas prontas." },
             { term: "Beta", definition: "Versão do sistema para testadores, onde atualizações são lançadas primeiro para identificação de erros." },
+            { term: "Bling Conta", definition: "Uma conta digital integrada ao Bling, disponível para planos específicos, que permite gerar e pagar boletos, fazer transferências Pix e TED, e gerenciar saldo de forma centralizada." },
             { term: "Caixa e Bancos", definition: "Menu onde são registrados e visualizados os recebimentos e pagamentos, após a baixa das contas." },
             { term: "Campos Customizados", definition: "Atributos específicos exigidos pelas lojas virtuais e marketplaces para os produtos." },
             { term: "Carta de Correção", definition: "Permite corrigir dados do transportador, CFOP (se não mudar natureza de impostos) e Código da Situação Tributária (se não alterar valores fiscais). Não corrige endereço do destinatário." },
             { term: "Categorização de Tickets", definition: "Importante para o time de produto planejar melhorias no sistema." },
             { term: "Central de Ajuda", definition: "Contém artigos que servem de base para criar respostas e auxiliar na compreensão." },
+            { term: "Certificado Digital", definition: "Identidade eletrônica da empresa, obrigatória para emissão de notas fiscais." },
+            { term: "Client ID", definition: "(API) Identificador do cliente." },
+            { term: "Client secret", definition: "(API) Chave secreta do cliente." },
+            { term: "CNAE", definition: "(Classificação Nacional de Atividades Econômicas) O código que identifica a atividade econômica principal de uma empresa, relevante para configurações fiscais em serviços e integração com prefeituras." },
+            { term: "Código (SKU)", definition: "O código de identificação único do produto (Stock Keeping Unit), essencial para controle de estoque e vendas, podendo ser manual ou sequencial." },
+            { term: "Comércio", definition: "Atividade relacionada à distribuição de produtos no mercado interno e externo, incluindo varejista, atacadista, independente, integrado, entre outros." },
+            { term: "Condição de pagamento", definition: "Configurações que definem como o pagamento será dividido e os prazos de vencimento (ex: à vista, 30/60 dias, 3x no cartão)." },
             { term: "Conferência de Estoque", definition: "Ferramenta para contagem e ajuste do estoque, requer SKU ou código de barras no produto." },
+            { term: "Contas a Pagar", definition: "Módulo para gerenciar todas as obrigações financeiras que a empresa tem com fornecedores, impostos e outras entidades." },
+            { term: "Contas a Receber", definition: "Módulo para gerenciar todos os valores que a empresa tem a receber de clientes por vendas ou serviços prestados." },
             { term: "Controle de Caixa", definition: "Destinado a registrar movimentações financeiras do Frente de Caixa." },
+            { term: "Controle de Estoques", definition: "O módulo principal para gerenciar os saldos de estoque dos produtos e analisar o histórico de todas as movimentações." },
             { term: "Cubagem Automática", definition: "Parâmetro que seleciona automaticamente a embalagem ideal com menor volume para os itens do pedido." },
+            { term: "Curva ABC", definition: "Ferramenta de classificação de produtos que identifica os itens de maior impacto para os resultados da empresa, baseando-se em critérios como giro de estoque, lucratividade e representatividade no faturamento." },
             { term: "DANFE Simplificado", definition: "Nota fiscal resumida, pode ser impressa junto com a etiqueta de transporte." },
             { term: "DBA", definition: "Delivery by Amazon, ferramenta de entrega da Amazon que agiliza o processo de envio." },
+            { term: "Depósitos de estoque", definition: "Funcionalidade que permite gerenciar múltiplos locais físicos de armazenamento de produtos, como diferentes lojas, armazéns ou centros de distribuição." },
+            { term: "DRE", definition: "(Demonstrativo de Resultado do Exercício) Relatório financeiro que utiliza categorias de receitas e despesas para organizar registros financeiros e permitir consultas sobre o desempenho da empresa." },
+            { term: "EFD Contribuições", definition: "Um arquivo digital da apuração do PIS e COFINS, obrigatório para empresas do Lucro Real e Presumido, entregue mensalmente." },
+            { term: "EFD ICMS/IPI", definition: "Um arquivo digital da apuração do ICMS e IPI, obrigatório para empresas do Lucro Real e Presumido, entregue mensalmente com prazo definido pelo estado." },
             { term: "ERP", definition: "Sistema de software que gerencia toda a empresa, automatizando processos financeiros, de RH, produção, entre outros." },
             { term: "Estoque Virtual", definition: "O saldo da composição é baseado no estoque dos componentes, utilizando a menor quantidade disponível, e não pode ser alterado." },
+            { term: "Etiqueta de envio", definition: "Documento gerado para identificar o volume a ser despachado, contendo dados do destinatário, remetente, serviço logístico, entre outras informações." },
+            { term: "Finalidade", definition: "(Nota Fiscal) Campo que indica o propósito específico da emissão da nota fiscal, como NF-e normal, complementar, de ajuste ou devolução de mercadoria." },
+            { term: "Fluxo de caixa", definition: "Relatório financeiro que permite analisar o movimento de entradas e saídas de dinheiro na empresa ao longo do tempo, considerando diversos parâmetros." },
+            { term: "Formato Jurídico", definition: "A estrutura legal da empresa, como ME, EPP, EI, EIRELI, SA ou LTDA, que define aspectos como faturamento máximo, regime de sócios e responsabilidade legal." },
+            { term: "Frete por conta", definition: "Campo na nota fiscal que indica quem é o responsável financeiro pelo custo do transporte (Remetente (CIF), Destinatário (FOB), Terceiros, etc.)." },
             { term: "Fulfillment", definition: "Modalidade de venda onde a plataforma é responsável pelo envio da mercadoria ao cliente." },
             { term: "Gerenciador de Transições", definition: "Automação que permite lançar estoque e contas, ou estorná-los, de acordo com as situações dos pedidos (ex: de 'Em Aberto' para 'Atendido' ou 'Cancelado')." },
+            { term: "Gestão de Estoque", definition: "A administração eficiente das mercadorias para equilibrar compras, armazenagem e entregas, controlar entradas e consumo, e otimizar o ciclo da mercadoria." },
+            { term: "Giro de estoque", definition: "Um dos indicadores de desempenho mais relevantes, mede a velocidade com que o estoque é renovado através das vendas em um determinado período." },
             { term: "GTIN", definition: "Código de barras utilizado para identificar produtos." },
             { term: "Hub", definition: "Dispositivo que centraliza conexões e permite comunicação com diversas plataformas." },
+            { term: "ICMS", definition: "(Imposto sobre Circulação de Mercadorias e Serviços) Um imposto estadual que incide sobre a circulação de mercadorias e a prestação de serviços de transporte e comunicação." },
             { term: "ID na Loja", definition: "Código alfanumérico responsável pelo vínculo multiloja dos produtos do Bling com a loja virtual." },
+            { term: "Inscrição Estadual", definition: "Um registro fiscal que identifica a empresa como contribuinte do ICMS no estado, obrigatório para emissão de NF-e, com particularidades para MEI." },
+            { term: "Inventário", definition: "O processo de sistematizar a movimentação do estoque através de normas de entrada e saída, e de verificar fisicamente as quantidades para ter informações precisas sobre a quantidade e valor financeiro de cada item." },
+            { term: "Lançamentos de Estoque", definition: "Registros detalhados que representam todas as movimentações de entrada, saída ou balanço que alteram o saldo de estoque de um produto." },
+            { term: "Limite de crédito", definition: "Valor máximo de crédito que pode ser definido para clientes no cadastro, geralmente na seção Financeiro." },
             { term: "Logística Reversa", definition: "Facilita a troca e devolução de vendas online sem custo para o consumidor. É possível gerar um código de reversão via Correios e Envios por Melhor Envio." },
+            { term: "Lucro Presumido", definition: "Uma forma de tributação que calcula o IRPJ e CSLL com base em margens de lucro predefinidas para o ramo de atividade da empresa." },
+            { term: "Lucro Real", definition: "Uma forma de tributação que calcula o IRPJ e CSLL com base no Lucro Líquido real apurado pela empresa, permitindo apropriação de créditos de PIS/COFINS." },
             { term: "Marketplace", definition: "Plataforma online que reúne lojistas, como um shopping center virtual." },
+            { term: "Natureza de Operação", definition: "Uma configuração fiscal que define as características tributárias de uma operação (venda, compra, devolução, remessa, etc.), incluindo CFOPs e situações tributárias." },
             { term: "NCM", definition: "(Nomenclatura Comum do Mercosul) Campo obrigatório para emissão de nota fiscal, usado para categorização de mercadorias." },
             { term: "NFCe", definition: "Nota fiscal para vendas físicas, sem obrigatoriedade de CPF do cliente, utilizada em todos os estados brasileiros, exceto SC." },
             { term: "NFe", definition: "Nota fiscal para vendas de e-commerce, marketplace ou para CNPJ." },
+            { term: "NFS-e", definition: "(Nota Fiscal de Serviço Eletrônica) Um tipo de nota fiscal emitida para formalizar a prestação de serviços, com tributação geralmente vinculada à prefeitura do município do prestador." },
             { term: "Objeto Logístico", definition: "Necessário inserir um para cada volume a ser enviado ao transportador." },
             { term: "Ordem de Produção", definition: "Requer produto no formato 'Com composição', produção 'Própria' e estoque 'Físico', e considera apenas 1 produto por ordem." },
+            { term: "Ordem de Serviço", definition: "Um documento para registrar e gerenciar a prestação de um serviço, podendo incluir produtos utilizados e ser vinculada a notas fiscais." },
             { term: "Origem", definition: "Campo obrigatório para emissão de nota fiscal, que define a procedência do produto." },
             { term: "Painel", definition: "Ambiente administrativo da loja virtual do seller." },
+            { term: "Pedidos de Venda", definition: "Documento interno fundamental para registrar uma venda de produtos ou serviços no Bling, podendo ser criado manualmente ou importado." },
+            { term: "PIS/COFINS", definition: "(Programa de Integração Social / Contribuição para o Financiamento da Seguridade Social) Impostos da esfera federal que incidem sobre o faturamento bruto das empresas, com diferentes regimes (cumulativo ou não cumulativo)." },
             { term: "POST", definition: "Método API que permite cadastrar novos produtos no sistema, aceitando a remoção de campos não obrigatórios no JSON." },
+            { term: "Propostas Comerciais", definition: "Módulo para criar e gerenciar documentos de oferta de produtos ou serviços a clientes antes da formalização da venda." },
             { term: "QZ Tray", definition: "Programa usado para comunicação com impressoras térmicas (ZPL e PDF) para impressão automática." },
             { term: "Quente", definition: "Versão finalizada e mais estável do sistema, utilizando a URL padrão do Bling." },
+            { term: "Refresh token", definition: "(API) Chave de acesso com tempo de expiração de 30 dias, usada para gerar novos tokens." },
+            { term: "Regime Tributário", definition: "O modelo de tributação que a empresa escolhe para calcular e pagar seus impostos, como Simples Nacional, Lucro Presumido ou Lucro Real." },
             { term: "Remessa", definition: "Envia dados da venda ou nota fiscal do Bling para a logística, permitindo a impressão de etiquetas." },
             { term: "Reserva de Estoque", definition: "Garante um produto para um cliente, independentemente do pagamento, considerando as situações dos pedidos para dar baixa nas lojas virtuais." },
             { term: "Sangria", definition: "(Frente de Caixa) Registra a retirada de valores do caixa." },
             { term: "SAT", definition: "Sistema Autenticador e Transmissor de Cupons Fiscais Eletrônicos, utilizado no estado de São Paulo para NFC-e." },
             { term: "SEFAZ", definition: "Secretaria da Fazenda, órgão que fiscaliza receitas/despesas estaduais e controla emissão de NF-e." },
             { term: "Seller", definition: "Termo utilizado para se referir ao cliente (vendedor) do Bling." },
+            { term: "Simples Nacional", definition: "Um Regime Especial Unificado de Arrecadação de Tributos e Contribuições para Microempresas (ME) e Empresas de Pequeno Porte (EPP), com faturamento anual limitado." },
+            { term: "SPED", definition: "(Sistema Público de Escrituração Digital) Um sistema de escrituração digital que abrange diversas obrigações fiscais e contábeis eletrônicas, como NF-e, EFD ICMS/IPI e EFD Contribuições." },
+            { term: "Substituição Tributária", definition: "(ICMS ST) A cobrança antecipada do ICMS, onde um único contribuinte (o substituto) recolhe o imposto de toda a cadeia de produção e distribuição." },
+            { term: "Sugestão de melhoria", definition: "Ideias ou solicitações de novas funcionalidades ou melhorias em funcionalidades existentes no sistema, que são analisadas para possível implementação futura." },
             { term: "Suprimento", definition: "(Frente de Caixa) Registra a inserção de valores no caixa." },
+            { term: "Tags", definition: "Utilizadas para categorizar internamente os produtos no Bling." },
             { term: "Taxas de Marketplaces", definition: "Taxas cobradas por cada marketplace, como comissões ou fretes." },
+            { term: "Tracking", definition: "(Código de rastreamento) O código que permite o acompanhamento da situação de entrega das mercadorias enviadas, gerado a partir do objeto logístico e atualizado automaticamente." },
+            { term: "Transferência de Estoque", definition: "Pode ser feita em Cadastros > Produtos ou Suprimentos > Controle de Estoque." },
+            { term: "URL de Redirecionamento", definition: "Utilizada para receber os códigos necessários para autorizar o token." },
+            { term: "Vínculo Multiloja", definition: "O método de vínculo de um produto com uma loja virtual ou marketplace pode variar conforme a integração." },
             { term: "XML de Notas Fiscais", definition: "Arquivo digital que contém todas as informações fiscais da nota." },
             { term: "ZPL", definition: "Formato utilizado para impressão de etiquetas 15x10 (impressoras térmicas)." }
         ];
@@ -276,7 +330,7 @@
         const correctWordEl = document.getElementById('correct-word');
         const wordDefinitionEl = document.getElementById('word-definition');
         const definitionContainer = document.getElementById('definition-container');
-        const playAgainBtn = document.getElementById('play-again-btn');
+        const modalButtonsContainer = document.getElementById('modal-buttons');
         const hangmanParts = ['head', 'body', 'left-arm', 'right-arm', 'left-leg', 'right-leg'];
         const faceParts = ['face-neutral', 'face-worried', 'face-despair', 'face-dead', 'face-happy'];
 
@@ -286,8 +340,9 @@
         let wrongGuesses;
         let currentStreak = 0;
         let bestStreak = 0;
+        let usedWordsInSession = [];
         const MAX_WRONG_GUESSES = 6;
-        const WIN_STREAK_GOAL = 10;
+        const WIN_STREAK_GOAL = 20;
 
         // --- FUNÇÕES DO JOGO ---
 
@@ -321,7 +376,14 @@
             loadGameData();
             guessedLetters = new Set();
             wrongGuesses = 0;
-            selectedWord = glossary[Math.floor(Math.random() * glossary.length)];
+            
+            let availableWords = glossary.filter(wordObj => !usedWordsInSession.includes(wordObj.term));
+            if (availableWords.length === 0) {
+                usedWordsInSession = [];
+                availableWords = glossary;
+            }
+            selectedWord = availableWords[Math.floor(Math.random() * availableWords.length)];
+            usedWordsInSession.push(selectedWord.term);
             
             renderWord();
             renderKeyboard();
@@ -457,6 +519,7 @@
             modalContentBox.classList.remove('modal-winner');
             modalTitle.classList.remove('text-green-600', 'text-red-600');
             iconContainer.innerHTML = '';
+            modalButtonsContainer.innerHTML = ''; // Limpa os botões anteriores
 
             if (isWinner) {
                 document.getElementById('head').style.opacity = '1';
@@ -466,10 +529,30 @@
                 iconContainer.innerHTML = `<div class="flex justify-center items-center"><span class="text-5xl opacity-70">🏆</span><span class="text-7xl mx-2">🏆</span><span class="text-5xl opacity-70">🏆</span></div>`;
                 wordDefinitionEl.textContent = selectedWord.definition;
                 definitionContainer.classList.remove('hidden');
+
+                const continueBtn = document.createElement('button');
+                continueBtn.textContent = 'Continuar Jogando';
+                continueBtn.className = 'w-full bg-white text-green-700 font-bold py-3 px-4 rounded-lg hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transform hover:scale-105 transition-transform';
+                continueBtn.addEventListener('click', startRound);
+                modalButtonsContainer.appendChild(continueBtn);
+
             } else {
                 modalTitle.textContent = 'Fim de Jogo!';
                 modalTitle.classList.add('text-red-600');
                 definitionContainer.classList.add('hidden');
+                
+                const tryAgainBtn = document.createElement('button');
+                tryAgainBtn.textContent = 'Tentar Novamente';
+                tryAgainBtn.className = 'w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transform hover:scale-105 transition-transform';
+                tryAgainBtn.addEventListener('click', startRound);
+
+                const menuBtn = document.createElement('button');
+                menuBtn.textContent = 'Ir para o Menu';
+                menuBtn.className = 'w-full bg-gray-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50 transform hover:scale-105 transition-transform';
+                menuBtn.addEventListener('click', goToMenu);
+
+                modalButtonsContainer.appendChild(tryAgainBtn);
+                modalButtonsContainer.appendChild(menuBtn);
             }
             correctWordEl.textContent = selectedWord.term;
             modal.classList.remove('hidden');
@@ -480,8 +563,16 @@
             finalVictoryScreen.classList.remove('hidden');
         };
         
+        const goToMenu = () => {
+            usedWordsInSession = [];
+            modal.classList.add('hidden');
+            gameScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+        };
+
         const resetGame = () => {
             currentStreak = 0;
+            usedWordsInSession = []; // Limpa o histórico de palavras
             localStorage.setItem('hangmanCurrentStreak', currentStreak);
             finalVictoryScreen.classList.add('hidden');
             startScreen.classList.remove('hidden');
@@ -489,7 +580,6 @@
 
         // --- EVENT LISTENERS ---
         startGameBtn.addEventListener('click', startRound);
-        playAgainBtn.addEventListener('click', startRound);
         restartGameBtn.addEventListener('click', resetGame);
         
         // Carrega os dados do jogo na inicialização
